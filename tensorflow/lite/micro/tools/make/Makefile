@@ -64,9 +64,14 @@ TEST_SCRIPT := tensorflow/lite/micro/testing/test_linux_binary.sh
 
 MICROLITE_LIBS := -lm
 
-# TODO(b/150240249): Add in -fno-rtti once that works for the Xtensa toolchain.
-CXXFLAGS := -std=c++11 -DTF_LITE_STATIC_MEMORY
-CCFLAGS  := -std=c11   -DTF_LITE_STATIC_MEMORY
+# There are no rules for compiling objects for the host system (since we don't
+# generate things like the protobuf compiler that require that), so all of
+# these settings are for the target compiler.
+CXXFLAGS := -O0 -DNDEBUG
+CXXFLAGS += -std=c++11 -g -DTF_LITE_STATIC_MEMORY
+CXXFLAGS += -fno-rtti
+CCFLAGS := -DNDEBUG -g -DTF_LITE_STATIC_MEMORY
+LDOPTS := -L/usr/local/lib
 ARFLAGS := -r
 TARGET_TOOLCHAIN_PREFIX :=
 CC_PREFIX :=
