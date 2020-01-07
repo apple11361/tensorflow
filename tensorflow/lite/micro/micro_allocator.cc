@@ -403,6 +403,7 @@ TfLiteStatus MicroAllocator::Init() {
   }
 
   // Initialize runtime tensors in context_ using the flatbuffer.
+  unsigned long long int read_only_tensor_data_size = 0;
   for (size_t i = 0; i < tensors_->size(); ++i) {
     TfLiteStatus status = internal::InitializeRuntimeTensor(
         memory_allocator_, *tensors_->Get(i), model_->buffers(),
@@ -412,7 +413,11 @@ TfLiteStatus MicroAllocator::Init() {
                            i);
       return kTfLiteError;
     }
+    if (context_->tensors[i].allocation_type == kTfLiteMmapRo) {
+      read_only_tensor_data_size += context_->tensors[i].bytes;
+    }
   }
+  printf("Total space of read only tensor data: %llu\n", read_only_tensor_data_size);
 
   return kTfLiteOk;
 }
